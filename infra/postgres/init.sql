@@ -1,0 +1,2 @@
+-- Schema is populated in Task 4 (Governance Audit Chain).
+-- This file must exist for the postgres Docker container to mount successfully.
