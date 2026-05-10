@@ -8,7 +8,7 @@
 
 ## 1. System Overview
 
-NORDA MAS is a multi-agent fraud detection system built for NORDA Bank. Every transaction entering the pipeline is simultaneously evaluated by two specialized AI agents, validated by an independent governance layer, and made available for human operator review — all before any decision is executed.
+FIDES is a multi-agent fraud detection system built for NORDA Bank. Every transaction entering the pipeline is simultaneously evaluated by two specialized AI agents, validated by an independent governance layer, and made available for human operator review — all before any decision is executed.
 
 **Core design principle:** No agent decision reaches production without cryptographic validation, an immutable audit trail, and a human override path.
 
@@ -18,7 +18,7 @@ NORDA MAS is a multi-agent fraud detection system built for NORDA Bank. Every tr
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                         NORDA MAS PLATFORM                          │
+│                         FIDES PLATFORM                          │
 │                                                                     │
 │  ┌──────────────┐    POST /events/inject                            │
 │  │  Transaction  │──────────────────────────────────────────────┐   │

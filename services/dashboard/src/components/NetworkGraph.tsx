@@ -2,6 +2,9 @@
 import { useEffect, useRef } from "react";
 import { WSMessage, NetworkNode, NetworkEdge } from "../types/events";
 
+const SANCTIONED = new Set(["IR", "KP", "SY", "CU", "VE"]);
+const HIGH_RISK = new Set(["RU", "NG", "BY", "UA", "MM", "AF", "IQ", "LY", "SO", "YE"]);
+
 interface GraphState {
   nodes: Map<string, NetworkNode>;
   edges: NetworkEdge[];
@@ -26,7 +29,7 @@ export function NetworkGraph({ messages }: { messages: WSMessage[] }) {
       const highRisk = Boolean(payload.high_risk ?? false);
       if (!accountId || !country) continue;
 
-      const addOrUpdate = (id: string, risk: boolean) => {
+      const addOrUpdate = (id: string) => {
         if (!nodes.has(id)) {
           nodes.set(id, {
             id,
@@ -38,13 +41,11 @@ export function NetworkGraph({ messages }: { messages: WSMessage[] }) {
             highRisk: false,
           });
         }
-        const n = nodes.get(id)!;
-        n.count += 1;
-        n.highRisk = n.highRisk || risk;
+        nodes.get(id)!.count += 1;
       };
 
-      addOrUpdate(accountId, highRisk);
-      addOrUpdate(country, highRisk);
+      addOrUpdate(accountId);
+      addOrUpdate(country);
       edges.push({ source: accountId, target: country, amount, highRisk });
 
       // Keep bounded
@@ -126,9 +127,17 @@ export function NetworkGraph({ messages }: { messages: WSMessage[] }) {
       for (const n of nodeArr) {
         const r = Math.min(5 + n.count * 1.2, 18);
         const isCountry = n.id.length === 2;
+        let fillColor: string;
+        if (isCountry) {
+          if (SANCTIONED.has(n.id)) fillColor = "#ef4444";       // red   — sanctioned
+          else if (HIGH_RISK.has(n.id)) fillColor = "#f97316";   // orange — high-risk
+          else fillColor = "#6366f1";                             // indigo — normal country
+        } else {
+          fillColor = "#10b981";                                  // green  — account
+        }
         ctx.beginPath();
         ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = n.highRisk ? "#ef4444" : isCountry ? "#6366f1" : "#10b981";
+        ctx.fillStyle = fillColor;
         ctx.fill();
         ctx.font = "9px monospace";
         ctx.fillStyle = "#9ca3af";
@@ -157,8 +166,12 @@ export function NetworkGraph({ messages }: { messages: WSMessage[] }) {
             country
           </span>
           <span className="flex items-center gap-1">
+            <span className="inline-block w-2 h-2 rounded-full bg-orange-500" />
+            high-risk country
+          </span>
+          <span className="flex items-center gap-1">
             <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-            high-risk
+            sanctioned
           </span>
         </div>
       </div>
