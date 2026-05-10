@@ -44,3 +44,4 @@ Transaction Feed → Orchestrator → Redis Streams (norda:events)
 - Every decision is SHA256-chained and HMAC-signed by governance
 - Human operators can Approve / Reject / Suspend any decision via the HITL queue
 - Wazuh SIEM receives all events for SOC monitoring
+# Fides
