@@ -1,2 +1,8 @@
 docs/pitch-deck.html
 docs/speaker-notes.md
+__pycache__/
+*.pyc
+*.pyo
+.env
+dist/
+node_modules/
