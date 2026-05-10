@@ -51,3 +51,35 @@ export interface WSMessage {
   type: EventType;
   data: AgentMessage | AuditEntry | HITLEvent;
 }
+
+export interface ExplanationCard {
+  why_flagged: string[];
+  regulation: string;
+  recommended_action: string;
+  risk_level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+}
+
+export interface AtlasThreat {
+  technique_id: string;
+  name: string;
+  attempts: number;
+  blocked: number;
+  status: "monitoring" | "active" | "blocked";
+}
+
+export interface NetworkNode {
+  id: string;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  count: number;
+  highRisk: boolean;
+}
+
+export interface NetworkEdge {
+  source: string;
+  target: string;
+  amount: number;
+  highRisk: boolean;
+}
