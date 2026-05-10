@@ -24,6 +24,7 @@ INJECTION_PATTERNS = [
     "os.system",
     "subprocess.run",
     "base64.decode",
+    "bypass restrictions",
 ]
 
 ATLAS_TECHNIQUE = "AML0043"
