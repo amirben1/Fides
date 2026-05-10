@@ -14,8 +14,8 @@ export function DecisionLog({ messages }: { messages: WSMessage[] }) {
       {decisions.length === 0 && (
         <div className="text-gray-600 text-xs">No validated decisions yet.</div>
       )}
-      {decisions.map((d, i) => (
-        <div key={i} className="mb-2 border border-gray-700 rounded p-2 text-xs font-mono">
+      {decisions.map((d) => (
+        <div key={d.id} className="mb-2 border border-gray-700 rounded p-2 text-xs font-mono">
           <div className="flex justify-between mb-1">
             <span className="text-emerald-400">#{d.sequence}</span>
             <span className="text-gray-500">{d.agent_id}</span>

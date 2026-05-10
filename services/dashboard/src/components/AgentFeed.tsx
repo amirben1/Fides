@@ -24,7 +24,7 @@ export function AgentFeed({ messages }: { messages: WSMessage[] }) {
         const agentId = typeof data.agent_id === "string" ? data.agent_id : "";
         const correlationId = typeof data.correlation_id === "string" ? data.correlation_id : "";
         return (
-          <div key={i} className="mb-1 border-b border-gray-800 pb-1">
+          <div key={String((data.id as string | undefined) ?? i)} className="mb-1 border-b border-gray-800 pb-1">
             <span className="text-gray-500 text-xs mr-2">
               {new Date(timestamp).toLocaleTimeString()}
             </span>

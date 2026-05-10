@@ -6,15 +6,17 @@ export function useWebSocket(url: string) {
   const [messages, setMessages] = useState<WSMessage[]>([]);
   const [connected, setConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
+  const destroyedRef = useRef(false);
 
   const connect = useCallback(() => {
+    if (destroyedRef.current) return;
     const ws = new WebSocket(url);
     wsRef.current = ws;
 
     ws.onopen = () => setConnected(true);
     ws.onclose = () => {
       setConnected(false);
-      setTimeout(connect, 2000);
+      if (!destroyedRef.current) setTimeout(connect, 2000);
     };
     ws.onmessage = (e) => {
       try {
@@ -25,8 +27,12 @@ export function useWebSocket(url: string) {
   }, [url]);
 
   useEffect(() => {
+    destroyedRef.current = false;
     connect();
-    return () => wsRef.current?.close();
+    return () => {
+      destroyedRef.current = true;
+      wsRef.current?.close();
+    };
   }, [connect]);
 
   return { messages, connected };
