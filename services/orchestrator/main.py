@@ -11,6 +11,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from services.orchestrator.atlas import AtlasTracker
 from services.orchestrator.auth import sign_message
 from services.orchestrator.explainer import generate_explanation
 from services.orchestrator.hitl import HITLQueue, HITLError
@@ -26,6 +27,7 @@ DECISIONS_STREAM = os.environ.get("DECISIONS_STREAM", "norda:decisions")
 
 hitl_queue = HITLQueue()
 transaction_cache: dict[str, dict] = {}
+atlas_tracker = AtlasTracker()
 ws_clients: list[WebSocket] = []
 
 
@@ -73,6 +75,7 @@ async def stream_listener(redis_client: aioredis.Redis) -> None:
                                 "correlation_id": corr_id,
                                 "explanation": explanation,
                             }})
+                    atlas_tracker.record(msg_type, data)
         except Exception as e:
             logger.error("Stream listener error: %s", e)
             await asyncio.sleep(1)
@@ -211,6 +214,11 @@ async def enqueue_hitl(decision_id: str, req: HITLEnqueueRequest):
 @app.get("/hitl/pending")
 async def list_pending_hitl():
     return {"pending": hitl_queue.list_pending()}
+
+
+@app.get("/atlas/threats")
+async def get_atlas_threats():
+    return {"threats": atlas_tracker.get_threats()}
 
 
 @app.get("/audit/chain")
