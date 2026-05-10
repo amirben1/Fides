@@ -138,6 +138,10 @@ async def inject_event(req: InjectEventRequest):
     if len(transaction_cache) > 1000:
         oldest_key = next(iter(transaction_cache))
         del transaction_cache[oldest_key]
+    # Fan out to agent input streams
+    agent_payload = json.dumps({"correlation_id": req.correlation_id, "payload": req.payload})
+    await app.state.redis.xadd("norda:detection-agent:input", {"data": agent_payload})
+    await app.state.redis.xadd("norda:compliance-agent:input", {"data": agent_payload})
     await broadcast({"type": "TRANSACTION_RECEIVED", "data": msg.model_dump(mode="json")})
     return {"status": "injected", "correlation_id": req.correlation_id}
 

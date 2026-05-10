@@ -74,5 +74,33 @@ services:
       retries: 3
       start_period: 5s
 
+  detection-agent:
+    build:
+      context: .
+      dockerfile: services/detection_agent/Dockerfile
+    env_file: .env
+    environment:
+      - INPUT_STREAM=norda:detection-agent:input
+      - AGENT_ID=detection-agent-v1
+    depends_on:
+      redis:
+        condition: service_healthy
+      governance:
+        condition: service_healthy
+
+  compliance-agent:
+    build:
+      context: .
+      dockerfile: services/compliance_agent/Dockerfile
+    env_file: .env
+    environment:
+      - INPUT_STREAM=norda:compliance-agent:input
+      - AGENT_ID=compliance-agent-v1
+    depends_on:
+      redis:
+        condition: service_healthy
+      governance:
+        condition: service_healthy
+
 volumes:
   pgdata:
