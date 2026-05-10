@@ -56,6 +56,6 @@ class WazuhBridge:
                     verify=self._verify_ssl,
                 )
                 resp.raise_for_status()
-            except httpx.HTTPError as e:
+            except (httpx.HTTPError, httpx.RequestError) as e:
                 logger.error("Wazuh send failed: %s", e)
                 self._token = None  # force re-auth on next call
