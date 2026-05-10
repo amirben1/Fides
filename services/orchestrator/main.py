@@ -116,6 +116,12 @@ class HITLResolveRequest(BaseModel):
     operator_id: str
 
 
+class HITLEnqueueRequest(BaseModel):
+    correlation_id: str
+    decision: dict[str, Any]
+    rationale: str
+
+
 @app.post("/hitl/{decision_id}/resolve")
 async def resolve_hitl(decision_id: str, req: HITLResolveRequest):
     try:
@@ -127,15 +133,15 @@ async def resolve_hitl(decision_id: str, req: HITLResolveRequest):
 
 
 @app.post("/hitl/{decision_id}/enqueue")
-async def enqueue_hitl(decision_id: str, req: dict):
+async def enqueue_hitl(decision_id: str, req: HITLEnqueueRequest):
     """Called by governance/agents to add a decision to the HITL queue."""
     hitl_queue.enqueue(
         decision_id=decision_id,
-        correlation_id=req.get("correlation_id", ""),
-        decision=req.get("decision", {}),
-        rationale=req.get("rationale", ""),
+        correlation_id=req.correlation_id,
+        decision=req.decision,
+        rationale=req.rationale,
     )
-    await broadcast({"type": "HITL_REQUIRED", "data": {"decision_id": decision_id, **req}})
+    await broadcast({"type": "HITL_REQUIRED", "data": {"decision_id": decision_id, "correlation_id": req.correlation_id, "decision": req.decision, "rationale": req.rationale}})
     return {"status": "enqueued"}
 
 
