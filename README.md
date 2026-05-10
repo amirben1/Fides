@@ -45,3 +45,4 @@ Transaction Feed → Orchestrator → Redis Streams (norda:events)
 - Human operators can Approve / Reject / Suspend any decision via the HITL queue
 - Wazuh SIEM receives all events for SOC monitoring
 # Fides
+# Fides
