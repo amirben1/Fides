@@ -1,4 +1,4 @@
-# NORDA MAS — Multi-Agent Fraud Detection System
+# Fides — Autonomous Fraud Detection for NORDA Bank
 
 ## Quick Start
 

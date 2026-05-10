@@ -91,7 +91,7 @@ async def lifespan(app: FastAPI):
     await redis_client.aclose()
 
 
-app = FastAPI(title="NORDA MAS Orchestrator", lifespan=lifespan)
+app = FastAPI(title="Fides — NORDA Bank Governance Orchestrator", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

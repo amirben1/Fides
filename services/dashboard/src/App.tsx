@@ -32,8 +32,8 @@ export default function App() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">NORDA Bank · MAS Operations</h1>
-            <p className="text-gray-500 text-sm mt-1">Multi-Agent Fraud Detection · Governance Console</p>
+            <h1 className="text-2xl font-bold tracking-tight">Fides <span className="text-gray-600 font-normal text-lg">· NORDA Bank</span></h1>
+            <p className="text-gray-500 text-sm mt-1">Autonomous Fraud Detection · Governance Operations Center</p>
           </div>
           <div className="flex items-center gap-4">
             <SystemHealth connected={connected} />
