@@ -6,6 +6,7 @@ import { DecisionLog } from "./components/DecisionLog";
 import { HitlQueue } from "./components/HitlQueue";
 import { SystemHealth } from "./components/SystemHealth";
 import { AtlasPanel } from "./components/AtlasPanel";
+import { NetworkGraph } from "./components/NetworkGraph";
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? "ws://localhost:8000/ws";
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
@@ -60,6 +61,11 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           <AtlasPanel />
           <DecisionLog messages={messages} />
+        </div>
+
+        {/* Network Graph */}
+        <div className="mt-6">
+          <NetworkGraph messages={messages} />
         </div>
       </div>
     </div>
