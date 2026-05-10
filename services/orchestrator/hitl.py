@@ -14,12 +14,21 @@ class HITLQueue:
         self._resolved: list[dict[str, Any]] = []
         self._suspended: list[dict[str, Any]] = []
 
-    def enqueue(self, *, decision_id: str, correlation_id: str, decision: dict[str, Any], rationale: str) -> None:
+    def enqueue(
+        self,
+        *,
+        decision_id: str,
+        correlation_id: str,
+        decision: dict[str, Any],
+        rationale: str,
+        explanation: dict[str, Any] | None = None,
+    ) -> None:
         self._pending[decision_id] = {
             "decision_id": decision_id,
             "correlation_id": correlation_id,
             "decision": decision,
             "rationale": rationale,
+            "explanation": explanation,
             "enqueued_at": datetime.now(timezone.utc).isoformat(),
         }
 
