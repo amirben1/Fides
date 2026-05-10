@@ -9,6 +9,7 @@ import asyncpg
 import redis.asyncio as aioredis
 
 from services.governance.chain import ChainSigner
+from services.governance.injection_guard import detect_injection
 from services.governance.wazuh import WazuhBridge
 from services.orchestrator.auth import verify_message, AuthError
 from shared.schema.events import AgentMessage, AuditEntry
@@ -56,6 +57,7 @@ async def persist_entry(conn: asyncpg.Connection, entry: AuditEntry) -> None:
 
 
 async def process_message(msg: AgentMessage, conn: asyncpg.Connection, redis_client: aioredis.Redis) -> None:
+    # Verify JWT from sending agent
     try:
         verify_message(msg.jwt_token, GOVERNANCE_SECRET)
     except AuthError as e:
@@ -63,6 +65,27 @@ async def process_message(msg: AgentMessage, conn: asyncpg.Connection, redis_cli
         if wazuh:
             await wazuh.send_event("AGENT_ERROR", {"reason": "auth_failure"}, msg.correlation_id)
         return
+
+    # Injection guard — quarantine before chaining
+    is_injection, inj_reason, inj_technique = detect_injection(msg.payload)
+    if is_injection:
+        logger.warning("INJECTION DETECTED from %s: %s", msg.agent_id, inj_reason)
+        alert = json.dumps({
+            "type": "PROMPT_INJECTION_DETECTED",
+            "agent_id": msg.agent_id,
+            "correlation_id": msg.correlation_id,
+            "reason": inj_reason,
+            "technique": inj_technique,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        })
+        await redis_client.xadd(DECISIONS_STREAM, {"data": alert})
+        if wazuh:
+            await wazuh.send_event(
+                "PROMPT_INJECTION_DETECTED",
+                {"reason": inj_reason, "technique": inj_technique},
+                msg.correlation_id,
+            )
+        return  # never chain injected payloads
 
     seq = await get_last_sequence(conn) + 1
     prev_hash = await get_last_entry_hash(conn)
